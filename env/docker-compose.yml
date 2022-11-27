@@ -1,0 +1,103 @@
+version: '3'
+networks:
+  dev-network:
+    driver: bridge
+
+services:
+  database-mysql:
+    build: database/mysql
+    image: image-database-mysql
+    container_name: container-database-mysql
+    networks:
+      - dev-network
+    ports:
+      - "3306:3306"
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=cu-dohcax
+    # 宿主机上需要现有这几个目录
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql # 数据目录
+      - /etc/localtime:/etc/localtime # 时区
+    restart: always
+
+  database-redis:
+    image: redis:6.2.6
+    container_name: container-database-redis
+    command: redis-server --requirepass "cu-dohcax"
+    networks:
+      - dev-network
+    ports:
+      - 6379:6379
+    volumes:
+      - /data/redis:/data
+      - /logs:/logs
+    restart: always
+
+  apollo-configservice:
+    container_name: apollo-configservice
+    image: apolloconfig/apollo-configservice:1.8.1
+    networks:
+      - dev-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database-mysql
+    links:
+      - database-mysql
+    volumes:
+      - "$PWD/logs/configservice:/opt/logs/100003171"
+    environment:
+      - spring_datasource_url=jdbc:mysql://container-database-mysql:3306/ApolloConfigDB?characterEncoding=utf8
+      - spring_datasource_username=root
+      - spring_datasource_password=cu-dohcax
+      - env=dev
+
+  apollo-adminservice:
+    container_name: apollo-adminservice
+    image: apolloconfig/apollo-adminservice:1.8.1
+    networks:
+      - dev-network
+    ports:
+      - "8090:8090"
+    depends_on:
+      - apollo-configservice
+    links:
+      - apollo-configservice
+    volumes:
+      - "$PWD/logs/adminservice:/opt/logs/100003172"
+    environment:
+      - spring_datasource_url=jdbc:mysql://container-database-mysql:3306/ApolloConfigDB?characterEncoding=utf8
+      - spring_datasource_username=root
+      - spring_datasource_password=cu-dohcax
+      - env=dev
+
+  apolo-portal:
+    container_name: apollo-portal
+    image: apolloconfig/apollo-portal:1.8.1
+    networks:
+      - dev-network
+    ports:
+      - "8070:8070"
+    volumes:
+      - "$PWD/logs/portalservice:/opt/logs/100003173"
+    environment:
+      - spring_datasource_url=jdbc:mysql://container-database-mysql:3306/ApolloPortalDB?characterEncoding=utf8
+      - spring_datasource_username=root
+      - spring_datasource_password=cu-dohcax
+      - apollo_portal_envs=dev    # 有多个环境可以支持多个
+      - dev_meta=http://apollo-configservice:8080  # 有多个环境可以支持多个
+
+  server-nginx:
+    build: gateway/nginx
+    image: image-gateway-nginx:latest
+    container_name: container-gateway-nginx
+    networks:
+      - dev-network
+    ports: # 宿主机端口:容器端口
+      - 80:80
+      - 443:443
+    volumes:
+      - /usr/share/nginx:/usr/share/nginx
+      - /etc/nginx:/etc/nginx
+    restart: always
