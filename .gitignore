@@ -1,0 +1,39 @@
+**/target/**
+!**/src/main/**
+!**/src/test/**
+!.mvn/wrapper/maven-wrapper.jar
+cnn/cnn_image_classification.model
+cnn/model.h5
+
+### Mybatis Generator ###
+# **/jdbc.properties
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+**/.idea/**
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+
+
+### Mac OS ###
+*.DS_Store
