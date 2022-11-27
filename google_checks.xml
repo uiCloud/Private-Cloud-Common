@@ -1,0 +1,753 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Checkstyle配置，从googlejava样式检查Google编码约定
+
+可以在https://google.github.io/styleguide/javaguide.html
+
+Checkstyle是非常可配置的。请务必阅读以下文档：
+
+http://checkstyle.org （或在下载的发行版中）。
+
+要完全禁用检查，只需将其注释掉或从文件中删除即可。
+
+要抑制某些违规行为，请查看抑制筛选器。
+
+作者：马克斯·维特伦科，罗斯兰·迪亚琴科，罗曼·伊万诺夫。
+
+
+
+本文末有token值范围说明，token代表作用范围
+
+
+
+ -->
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+
+    <property name="severity" value="warning"/>
+
+    <property name="fileExtensions" value="java, properties, xml"/>
+    <!-- 排除所有“module info.java”文件 -->
+    <!-- See https://checkstyle.org/config_filefilters.html -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module\-info\.java$"/>
+    </module>
+    <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
+                  default="checkstyle-suppressions.xml"/>
+        <property name="optional" value="true"/>
+    </module>
+
+    <!--      检查空格，检查代码中是否没有制表符 ('\t' )    -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+    <!-- 一行长度检查 -->
+    <module name="LineLength">
+        <property name="fileExtensions" value="java"/>
+        <property name="max" value="100"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- 检查外部类型名称和文件名是否匹配 -->
+        <module name="OuterTypeFilename"/>
+        <!-- 检查指定的标记文本(字符串\字符文字)以匹配非法模式 -->
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
+            <property name="format"
+                      value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>
+            <property name="message"
+                      value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
+        </module>
+        <!-- 避免转义Unicode字符,限制使用 Unicode 转义符（例如 \u221e）。可以允许对 不可打印的控制字符使用转义 符。此外，如果存在跟踪注释，可以将此检查配置为允许使用转义。如果文字仅包含转义符，则可以通过该选项允许使用转义符 -->
+        <module name="AvoidEscapedUnicodeCharacters">
+            <property name="allowEscapesForControlCharacters" value="true"/>
+            <property name="allowByTailComment" value="true"/>
+            <property name="allowNonPrintableEscapes" value="true"/>
+        </module>
+        <!--检查指定的标记文本以匹配非法模式 -->
+        <module name="AvoidStarImport"/>
+        <!--检查每个顶级类、接口、枚举或注释是否驻留在其自己的源文件中。如果文件不包含公共类、接口、枚举或注释，则顶级类型是文件中的第一个类型。  -->
+        <module name="OneTopLevelClass"/>
+        <!-- 检查所选语句未换行。默认情况下，此 Check 限制包装 import 和 package 语句，但可以检查任何语句 -->
+        <module name="NoLineWrap">
+            <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
+        </module>
+        <!-- 检查空块。此检查不会验证顺序块。 -->
+        <module name="EmptyBlock">
+            <property name="option" value="TEXT"/>
+            <property name="tokens"
+                      value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
+        </module>
+        <!--检查代码块周围的大括号  -->
+        <module name="NeedBraces">
+            <property name="tokens"
+                      value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
+        </module>
+        <!-- 检查'{'的位置。 -->
+        <module name="LeftCurly">
+            <property name="tokens"
+                      value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF,
+                    INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT,
+                    LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF,
+                    LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF,
+                    OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        <!--检查'}'的位置。如果多块语句的下一部分不存在，则大括号必须单独在线。它还允许多块语句的单行格式。  -->
+        <module name="RightCurly">
+            <property name="id" value="RightCurlySame"/>
+            <property name="tokens"
+                      value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE,
+                    LITERAL_DO"/>
+        </module>
+        <!-- 检查'}'的位置,必须单独一行 -->
+        <module name="RightCurly">
+            <property name="id" value="RightCurlyAlone"/>
+            <property name="option" value="alone"/>
+            <property name="tokens"
+                      value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT,
+                    INSTANCE_INIT, ANNOTATION_DEF, ENUM_DEF, INTERFACE_DEF, RECORD_DEF,
+                    COMPACT_CTOR_DEF"/>
+        </module>
+        <!--  -->
+        <module name="SuppressionXpathSingleFilter">
+            <!-- suppresion is required till https://github.com/checkstyle/checkstyle/issues/7541 -->
+            <property name="id" value="RightCurlyAlone"/>
+            <property name="query" value="//RCURLY[parent::SLIST[count(./*)=1]
+                                     or preceding-sibling::*[last()][self::LCURLY]]"/>
+        </module>
+        <!--检查标记后面是否有空格，但它不检查迭代器的空分号后是否有空格 -->
+        <module name="WhitespaceAfter">
+            <property name="tokens"
+                      value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE,
+                    LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, DO_WHILE"/>
+        </module>
+        <!-- 检查配置的地方是否被空格包围。空构造函数、方法、类、枚举、接口、循环体（块）、形式的 lambdas -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <property name="ignoreEnhancedForColon" value="false"/>
+            <property name="tokens"
+                      value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR,
+                    BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, DO_WHILE, EQUAL, GE, GT, LAMBDA, LAND,
+                    LCURLY, LE, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY,
+                    LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SWITCH, LITERAL_SYNCHRONIZED,
+                    LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN,
+                    NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR,
+                    SR_ASSIGN, STAR, STAR_ASSIGN, LITERAL_ASSERT, TYPE_EXTENSION_AND"/>
+            <message key="ws.notFollowed"
+                     value="WhitespaceAround: ''{0}'' is not followed by whitespace. Empty blocks may only be represented as '{}' when not part of a multi-block statement (4.1.3)"/>
+            <message key="ws.notPreceded"
+                     value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
+        </module>
+        <!--检查每行是否只有一个语句  -->
+        <module name="OneStatementPerLine"/>
+        <!-- 检查每个变量声明是否在其自己的语句中并在其自己的行上 -->
+        <module name="MultipleVariableDeclarations"/>
+        <!--  检查数组类型定义的样式。有些喜欢Java风格： public static void main(String[] args)有些喜欢C风格：public static void main(String args[]).
+    默认情况下，Check 强制执行 Java 风格-->
+        <module name="ArrayTypeStyle"/>
+        <!-- 检查 switch 语句是否有default子句。 -->
+        <module name="MissingSwitchDefault"/>
+        <!-- 检查switch 语句中的失败。查找位置，其中一个case 包含Java代码，但缺乏一个break，return， throw或continue 语句。 -->
+        <module name="FallThrough"/>
+        <!-- 检查长常量是否使用上 el 定义。那是'L'又不是'l'。 -->
+        <module name="UpperEll"/>
+        <!--  -->
+        <module name="ModifierOrder"/>
+        <!-- 检查修饰符的顺序是否符合Java 语言规范第 8.1.1、8.3.1、8.4.3和 9.4节中的建议。正确的顺序是：
+                   1 public
+                   2 protected
+                   3 private
+                   4 abstract
+                   5 default
+                   6 static
+                   7 sealed
+                   8 non-sealed
+                   9 final
+                   10 transient
+                   11 volatile
+                   12 synchronized
+                   13 native
+                   14 strictfp -->
+        <module name="EmptyLineSeparator">
+            <property name="tokens"
+                      value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                    STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF,
+                    COMPACT_CTOR_DEF"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
+        <!-- 用分隔符检查换行。  .在新行上 -->
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapDot"/>
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        <!-- 用分隔符检查换行。  ,在行尾 -->
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapComma"/>
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <!--  可变长度参数的三点在行尾-->
+        <module name="SeparatorWrap">
+            <!-- ELLIPSIS is EOL until https://github.com/google/styleguide/issues/259 -->
+            <property name="id" value="SeparatorWrapEllipsis"/>
+            <property name="tokens" value="ELLIPSIS"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <!-- 数组声明在行尾 -->
+        <module name="SeparatorWrap">
+            <!-- ARRAY_DECLARATOR is EOL until https://github.com/google/styleguide/issues/258 -->
+            <property name="id" value="SeparatorWrapArrayDeclarator"/>
+            <property name="tokens" value="ARRAY_DECLARATOR"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <!-- 对不带参数的方法或构造函数的引用必须在新行上 -->
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapMethodRef"/>
+            <property name="tokens" value="METHOD_REF"/>
+            <property name="option" value="nl"/>
+        </module>
+        <!--包名检查  -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+            <message key="name.invalidPattern"
+                     value="Package name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查类型名称是否符合指定的模式。 -->
+        <module name="TypeName">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                    ANNOTATION_DEF, RECORD_DEF"/>
+            <message key="name.invalidPattern"
+                     value="Type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查实例变量名称是否符合指定的模式。 -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="Member name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 参数名称 -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!--检查 lambda 参数名称。 -->
+        <module name="LambdaParameterName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Lambda parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查catch参数名称是否符合指定的模式。
+            默认模式具有以下特征：
+
+                允许名称以两个小写字母开头，后跟至少一个大写或小写字母
+                允许e缩写（适用于异常结束错误）
+                允许ex缩写（适用于例外情况）
+                允许t缩写（适用于throwables）
+                禁止编号缩写，如e1或t2
+                禁止单字母前缀，如 pException
+                禁止两个字母的缩写，如ie或ee
+                禁止除字母以外的任何其他字符 -->
+        <module name="CatchParameterName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Catch parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查本地非final变量名称是否符合指定的模式。catch 参数被认为是一个局部变量。 -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Local variable name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!--检查模式变量名称是否符合指定的模式 -->
+        <module name="PatternVariableName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Pattern variable name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查类类型参数名称是否符合指定的模式 -->
+        <module name="ClassTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+            <message key="name.invalidPattern"
+                     value="Class type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查记录组件名称是否符合指定的模式。 -->
+        <module name="RecordComponentName">
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+            <message key="name.invalidPattern"
+                     value="Record component name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查记录类型参数名称是否符合指定的模式-->
+        <module name="RecordTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+            <message key="name.invalidPattern"
+                     value="Record type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查方法类型参数名称是否符合指定的模式。 -->
+        <module name="MethodTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+            <message key="name.invalidPattern"
+                     value="Method type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查接口类型参数名称是否符合指定的模式。 -->
+        <module name="InterfaceTypeParameterName">
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
+            <message key="name.invalidPattern"
+                     value="Interface type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!-- 检查是否没有finalize具有零参数的方法。
+        例子：
+          protected void finalize() throws Throwable { // violation
+            try {
+               System.out.println("overriding finalize()");
+            } catch (Throwable t) {
+               throw t;
+            } finally {
+               super.finalize();
+            }
+        }
+         -->
+        <module name="NoFinalizer"/>
+        <!-- 检查通用标记（尖括号）“<”和“>”周围的空格是否符合典型约定。该约定不可配置。 -->
+        <module name="GenericWhitespace">
+            <message key="ws.followed"
+                     value="GenericWhitespace ''{0}'' is followed by whitespace."/>
+            <message key="ws.preceded"
+                     value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
+            <message key="ws.illegalFollow"
+                     value="GenericWhitespace ''{0}'' should followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
+        </module>
+        <!-- 检查 Java 代码的正确缩进 -->
+        <module name="Indentation">
+            <property name="basicOffset" value="2"/>
+            <property name="braceAdjustment" value="2"/>
+            <property name="caseIndent" value="2"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+            <property name="arrayInitIndent" value="2"/>
+        </module>
+        <!-- 验证标识符名称中的缩写（连续大写字母）长度，它还允许强制使用驼峰命名法。 -->
+        <module name="AbbreviationAsWordInName">
+            <property name="ignoreFinal" value="false"/>
+            <property name="allowedAbbreviationLength" value="0"/>
+            <property name="tokens"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF,
+                    PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF, PATTERN_VARIABLE_DEF, RECORD_DEF,
+                    RECORD_COMPONENT_DEF"/>
+        </module>
+        <!--大小写默认冒号前没有空格  -->
+        <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+        <!-- 检查重载的方法是否组合在一起。重载方法具有相同的名称但不同的签名，其中签名可能因输入参数的数量或输入参数的类型或两者而异。 -->
+        <module name="OverloadMethodsDeclarationOrder"/>
+        <!-- 检查变量声明与其第一次使用之间的距离。默认大于0，小于3，注意：计算长度时不计算变量声明/初始化语句，
+        例 子：
+           public void foo1() {
+              int num; // 违规，距离 = 4
+              final int PI; // 好的，final 变量没有检查
+              System.out.println("Statement 1");
+              System.out.println("语句2");
+              System.out.println("语句3");
+              数量 = 1;
+              PI = 3.14；
+            }
+
+            public void foo2() {
+              int a; // OK，在不同的作用域中使用
+              int b; // OK，在不同的作用域中使用
+              int count = 0; // OK，在不同的作用域中使用
+
+              {
+                System.out.println("Inside inner scope");
+                一 = 1;
+                b = 2;
+                计数++；
+              }
+            }
+
+      -->
+        <module name="VariableDeclarationUsageDistance"/>
+        <!-- 检查导入声明组是否按用户指定的顺序出现。如果存在导入但其组未在配置中指定，则应将此类导入放置在导入列表的末尾。 -->
+        <module name="CustomImportOrder">
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="separateLineBetweenGroups" value="true"/>
+            <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
+            <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
+        </module>
+        <!--  检查方法定义、构造函数定义、方法调用或构造函数调用的标识符之间的填充；和参数列表的左括号。即如果标识符和左括号在同一行，则检查标识符后面是否需要空格或禁止空格。如果它们不在同一行上，则报告违规，除非配置为允许换行。要在标识符后允许换行，请将属性设置allowLineBreaks为 true。-->
+        <module name="MethodParamPad">
+            <property name="tokens"
+                      value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF,
+                    SUPER_CTOR_CALL, ENUM_CONSTANT_DEF, RECORD_DEF"/>
+        </module>
+        <!--  检查令牌前是否没有空格。更具体地说，它检查它前面没有空格，或者（如果允许换行）之前行上的所有字符都是空格。要在标记之前允许换行，请将属性设置 allowLineBreaks为true。在空的 for 循环初始值设定项或条件中的分号之前不进行检查。-->
+        <module name="NoWhitespaceBefore">
+            <property name="tokens"
+                      value="COMMA, SEMI, POST_INC, POST_DEC, DOT,
+                    LABELED_STAT, METHOD_REF"/>
+            <property name="allowLineBreaks" value="true"/>
+        </module>
+        <!-- 检查有关括号填充的策略；即在左括号之后和右括号之前是否需要一个空格，或者这样的空格是被禁止的。在迭代器为空之后的右括号、初始化为空之前的左括号或 try-with-resources 资源规范的右括号（其中最后一个资源变量具有尾随分号）不进行检查。使用 Check EmptyForIteratorPad验证迭代器的空值，使用 EmptyForInitializerPad验证初始化器的 空值。也不会检查类型转换，因为有 TypecastParenPad 来验证它们。 -->
+        <module name="ParenPad">
+            <property name="tokens"
+                      value="ANNOTATION, ANNOTATION_FIELD_DEF, CTOR_CALL, CTOR_DEF, DOT, ENUM_CONSTANT_DEF,
+                    EXPR, LITERAL_CATCH, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_NEW,
+                    LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_WHILE, METHOD_CALL,
+                    METHOD_DEF, QUESTION, RESOURCE_SPECIFICATION, SUPER_CTOR_CALL, LAMBDA,
+                    RECORD_DEF"/>
+        </module>
+        <!-- 检查有关如何在运算符上换行的策略。
+          例子：
+             String s = "Hello" +
+            "World"; // violation, '+' should be on new line
+
+            if (10 ==
+                    20) { // violation, '==' should be on new line.
+            // body
+            }
+            if (10
+                    ==
+                    20) { // ok
+            // body
+            }
+
+            int c = 10 /
+                    5; // violation, '/' should be on new line.
+
+            int d = c
+                    + 10; // ok
+         -->
+        <module name="OperatorWrap">
+            <property name="option" value="NL"/>
+            <property name="tokens"
+                      value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR,
+                    LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF,
+                    TYPE_EXTENSION_AND "/>
+        </module>
+        <!-- 检查语言元素上的注释位置。默认情况下，检查强制在文档块之后和目标元素之前立即定位注释，注释应位于与目标元素不同的行上。如果注释不在同一行，此检查还会验证注释是否与带注释的元素处于同一缩进级别。
+    注意：不能有 JavaDoc 注释的元素（如局部变量）不在此检查的范围内，即使标记类型 likeVARIABLE_DEF会匹配它们。
+    注意：修饰符之间的注释被忽略（看起来像假阴性），因为返回类型的注释可能存在问题： -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationMostCases"/>
+            <property name="tokens"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF,
+                      RECORD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        <!--  检查语言元素上的注释位置-->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationVariables"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+            <!-- 允许一个且唯一的参数化注释与目标元素位于同一行 -->
+            <property name="allowSamelineMultipleAnnotations" value="true"/>
+        </module>
+        <!-- 检查块标记后面是否有描述。
+          例子：
+          class Test
+          {
+             /**
+              * Violation for param "b" and at tags "deprecated", "throws".
+              * @param a Some javadoc // OK
+              * @param b
+              * @deprecated
+              * @throws Exception
+              */
+              public int method(String a, int b) throws Exception
+              {
+                return 1;
+              }
+            }
+         -->
+        <module name="NonEmptyAtclauseDescription"/>
+        <!-- 检查 Javadoc 是否位于正确的位置。正如 标准 Doclet 的文档注释规范中所指定的，Javadoc 仅在紧接在模块、包、类、接口、构造函数、方法或字段声明之前被识别。任何其他位置，例如在方法体中，都将被 javadoc 工具忽略，并被此检查视为无效。 -->
+        <module name="InvalidJavadocPosition"/>
+        <!--检查块标记中连续行的缩进。那就是 at 子句的连续描述是否应该缩进。如果文本没有正确缩进，则会引发违规。续行是当描述开始/跨越带有标签的行时。所需的默认缩进至少为 4，但这可以在以下属性的帮助下进行更改。  -->
+        <module name="JavadocTagContinuationIndentation"/>
+        <!-- 检查 Javadoc 摘要句是否不包含不推荐使用的短语。仅包含{@inheritDoc}标记的摘要将被跳过。检查也违反了不包含第一句话的 Javadoc。 -->
+        <module name="SummaryJavadoc">
+            <property name="forbiddenSummaryFragments"
+                      value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
+        </module>
+        <!--检查 Javadoc 段落。
+              检查：
+
+              两个段落之间各有一个空行。
+              除了第一个段落之外的每个段落在第一个单词之前都有 <p> ，之后没有空格。  -->
+        <module name="JavadocParagraph"/>
+        <!-- 如果它存在于 Javadoc 中，则检查块标记之前的一个空行。
+            有效的 javadoc 应该有一个空行来分隔参数、返回、抛出或其他标签 -->
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+        <!-- 检查 javadoc block-tags 或 javadoc tags的顺序 。 -->
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated"/>
+            <property name="target"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+        </module>
+        <!--检查方法或构造函数的 Javadoc。
+
+            不存在 param 标签的违例参数和类型参数可以通过定义 property 来抑制 allowMissingParamTags。
+
+            违反返回非 void 但不存在返回标记的方法可以通过定义 property 来抑制 allowMissingReturnTag。
+
+            违反声明为抛出的异常（通过throws方法签名或throw new方法体），但通过激活 property 不存在 throws 标记validateThrows。请注意，throw new在以下地方未选中：
+
+            在 try 块内（带 catch）。由于不了解继承层次结构，因此无法确定抛出的异常是否可以被 catch 块捕获，因此完全忽略了 try 块。但是，catch 和finally 块以及没有catch 的try 块仍会被检查。
+            本地类、匿名类和 lambda 表达式。不知道何时会评估此类类中的 throw 语句，因此将忽略它​​们。
+            注意：Checkstyle 没有关于异常类型层次结构的信息，因此基类的使用被视为单独的异常类型。作为解决方法，您需要在 javadoc 中指定这两种类型（父类型和精确类型）。
+
+            用@Override注释标记的方法不需要 Javadoc 。但是，在 Java 5 下，无法标记接口所需的方法（这在 Java 6 下已更正）。因此，Checkstyle 支持使用单个{@inheritDoc}标签而不是所有其他标签的约定 。
+
+            请注意，只有可继承的项目才允许使用 {@inheritDoc}标记代替注释。所有可见性的静态方法、私有非静态方法和构造函数都不可继承。  -->
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
+        </module>
+        <!-- 检查缺少的方法或构造函数的 Javadoc 注释。要验证的范围是使用Scope类指定的，默认为Scope.PUBLIC。要验证另一个范围，请将属性范围设置为不同的 范围。
+            用@Override注释标记的方法不需要 Javadoc 。但是，在 Java 5 下，无法标记接口所需的方法（这在 Java 6 下已更正）。因此，Checkstyle 支持使用单个{@inheritDoc}标签而不是所有其他标签的约定 。-->
+        <module name="MissingJavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="minLineCount" value="2"/>
+            <property name="allowedAnnotations" value="Override, Test"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF,
+                                   COMPACT_CTOR_DEF"/>
+        </module>
+        <!-- 检查缺少的类、枚举、接口和注释接口定义的 Javadoc 注释。要验证的范围是使用Scope 类指定的，默认为Scope.PUBLIC。要验证另一个范围，请将属性范围设置为 Scope常量之一。 -->
+        <module name="MissingJavadocType">
+            <property name="scope" value="protected"/>
+            <property name="tokens"
+                      value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                      RECORD_DEF, ANNOTATION_DEF"/>
+            <property name="excludeScope" value="nothing"/>
+        </module>
+        <!-- 检查方法名称是否符合指定的模式。 -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
+            <message key="name.invalidPattern"
+                     value="Method name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <!--检查 Javadoc 块是否可以放在一行中并且不包含块标记。包含至少一个块标记的 Javadoc 注释应格式化为几行 -->
+        <module name="SingleLineJavadoc"/>
+        <!-- 检查空的 catch 块。默认情况下，检查允许带有任何注释的空 catch 块。catch可以为空，但必须有空行 -->
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected"/>
+        </module>
+        <!-- 控制注释和周围代码之间的缩进。注释与周围代码在同一级别缩进。可以在 此处找到有关此类约定的详细信息 -->
+        <module name="CommentsIndentation">
+            <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
+        </module>
+        <!-- https://checkstyle.org/config_filters.html#SuppressionXpathFilter -->
+        <!--  -->
+        <module name="SuppressionXpathFilter">
+            <property name="file" value="${org.checkstyle.google.suppressionxpathfilter.config}"
+                      default="checkstyle-xpath-suppressions.xml"/>
+            <property name="optional" value="true"/>
+        </module>
+    </module>
+</module>
+
+
+        <!-- token值范围：
+        static int  ABSTRACT 该abstract关键字。
+        static int  ANNOTATION 包、类型、字段、参数或变量的注释。
+        static int  ANNOTATION_ARRAY_INIT 一个注解数组成员初始化。
+        static int  ANNOTATION_DEF 注释声明。
+        static int  ANNOTATION_FIELD_DEF 注释字段声明。
+        static int  ANNOTATION_MEMBER_VALUE_PAIR 带有值的注释成员的初始化。
+        static int  ANNOTATIONS 包或枚举常量上的注释集合。
+        static int  ARRAY_DECLARATOR 数组声明。
+        static int  ARRAY_INIT 数组初始化。
+        static int  ASSIGN 该=（赋值）运算符。
+        static int  AT 一个@符号-标志着一个注释实例或前缀接口字面标志着注释声明的定义。
+        static int  BAND 将&（按位与）运算符。
+        static int  BAND_ASSIGN 将&=（按位与赋值）运算符。
+        static int  BLOCK_COMMENT_BEGIN 块注释的开始：'/*'。
+        static int  BLOCK_COMMENT_END 块结束注释：'*/'。
+        static int  BNOT 将~（按位补）运算符。
+        static int  BOR 将|（按位OR）运算符。
+        static int  BOR_ASSIGN 将|=（按位OR赋值）运算符。
+        static int  BSR 的>>>（无符号右移）运算符。
+        static int  BSR_ASSIGN 的>>>=（无符号右移赋值）运算符。
+        static int  BXOR 将^（按位异或）运算符。
+        static int  BXOR_ASSIGN 将^=（按位异或赋值）运算符。
+        static int  CASE_GROUP 一组 case 子句。
+        static int  CHAR_LITERAL 字符文字。
+        static int  CLASS_DEF 一个类声明。
+        static int  COLON 的:（结肠）运算符。
+        static int  COMMA 该,（逗号）运算符。
+        static int  COMMENT_CONTENT 单行或块注释的文本。
+        static int  COMPACT_CTOR_DEF 紧凑的规范构造函数消除了形式参数列表；它们是隐式声明的。
+        static int  CTOR_CALL 构造函数调用。
+        static int  CTOR_DEF 构造函数声明。
+        static int  DEC 该--（前缀递减）运算符。
+        static int  DIV 的/（除法）运算符。
+        static int  DIV_ASSIGN 该/=（除法赋值）运算符。
+        static int  DO_WHILE whiledo-while 循环中的字面量。
+        static int  DOT 在.（点）运算符。
+        static int  DOUBLE_COLON 该::（双冒号）分离器。
+        static int  ELIST 表达式列表。
+        static int  ELLIPSIS 可变长度参数的三点。
+        static int  EMPTY_STAT 空话。
+        static int  ENUM 该enum关键字。
+        static int  ENUM_CONSTANT_DEF 枚举常量声明。
+        static int  ENUM_DEF 一个枚举声明。
+        static int  EOF 文件结束标记。
+        static int  EQUAL 该==（等）运算符。
+        static int  EXPR 一种表达。
+        static int  EXTENDS_CLAUSE 一个扩展子句。
+        static int  FINAL 该final关键字。
+        static int  FOR_CONDITION for 循环条件。
+        static int  FOR_EACH_CLAUSE 一个 for-each 子句。
+        static int  FOR_INIT for 循环初始化程序。
+        static int  FOR_ITERATOR for 循环迭代器。
+        static int  GE 的>=（大于或等于）运算符。
+        static int  GENERIC_END 甲>符号标志着的类型参数或类型参数的端部。
+        static int  GENERIC_START 甲<符号标志着的类型参数或类型参数的开始。
+        static int  GT 的>（大于）运算符。
+        static int  IDENT 一个标识符。
+        static int  IMPLEMENTS_CLAUSE 一个实施条款。
+        static int  IMPORT 进口申报。
+        static int  INC 该++（前缀增量）操作。
+        static int  INDEX_OP 数组索引运算符。
+        static int  INSTANCE_INIT 一个实例初始化器。
+        static int  INTERFACE_DEF 一个接口声明。
+        static int  LABELED_STAT 带标签的声明。
+        static int  LAMBDA 特殊的 lambda 符号->。
+        static int  LAND 在&&（有条件的）运算符。
+        static int  LCURLY 左花括号 ( {)。
+        static int  LE 的<=（小于或等于）运算符。
+        static int  LITERAL_ASSERT 该assert关键字。
+        static int  LITERAL_BOOLEAN 该boolean关键字。
+        static int  LITERAL_BREAK 该break关键字。
+        static int  LITERAL_BYTE 该byte关键字。
+        static int  LITERAL_CASE 该case关键字。
+        static int  LITERAL_CATCH 该catch关键字。
+        static int  LITERAL_CHAR 该char关键字。
+        static int  LITERAL_CLASS 该class关键字。
+        static int  LITERAL_CONTINUE 该continue关键字。
+        static int  LITERAL_DEFAULT 该default关键字。
+        static int  LITERAL_DO 该do关键字。
+        static int  LITERAL_DOUBLE 该double关键字。
+        static int  LITERAL_ELSE 该else关键字。
+        static int  LITERAL_FALSE 该false关键字。
+        static int  LITERAL_FINALLY 该finally关键字。
+        static int  LITERAL_FLOAT 该float关键字。
+        static int  LITERAL_FOR 该for关键字。
+        static int  LITERAL_IF 该if关键字。
+        static int  LITERAL_INSTANCEOF 该instanceof运营商。
+        static int  LITERAL_INT 该int关键字。
+        static int  LITERAL_INTERFACE 该interface关键字。
+        static int  LITERAL_LONG 该long关键字。
+        static int  LITERAL_NATIVE 该native关键字。
+        static int  LITERAL_NEW 该new关键字。
+        static int  LITERAL_NON_SEALED 该non-sealed关键字。
+        static int  LITERAL_NULL 该null关键字。
+        static int  LITERAL_PERMITS 所述permits受限制的标识符。
+        static int  LITERAL_PRIVATE 该private关键字。
+        static int  LITERAL_PROTECTED 该protected关键字。
+        static int  LITERAL_PUBLIC 该public关键字。
+        static int  LITERAL_RECORD 该record关键字。
+        static int  LITERAL_RETURN 该return关键字。
+        static int  LITERAL_SEALED 所述sealed受限制的标识符。
+        static int  LITERAL_SHORT 该short关键字。
+        static int  LITERAL_STATIC 该static关键字。
+        static int  LITERAL_SUPER 该super关键字。
+        static int  LITERAL_SWITCH 该switch关键字。
+        static int  LITERAL_SYNCHRONIZED 该synchronized关键字。
+        static int  LITERAL_THIS 该this关键字用于指代当前对象。
+        static int  LITERAL_THROW 该throw关键字。
+        static int  LITERAL_THROWS 该throws关键字。
+        static int  LITERAL_TRANSIENT 该transient关键字。
+        static int  LITERAL_TRUE 该true关键字。
+        static int  LITERAL_TRY 该try关键字。
+        static int  LITERAL_VOID 该void关键字。
+        static int  LITERAL_VOLATILE 该volatile关键字。
+        static int  LITERAL_WHILE 该while关键字。
+        static int  LITERAL_YIELD  该yield关键字。
+        static int  LNOT  该!（逻辑补）运算符。
+        static int  LOR  在||（有条件或）运算符。
+        static int  LPAREN  左括号 ( ()。
+        static int  LT  的<（小于）运算符。
+        static int  METHOD_CALL  一个方法调用。
+        static int  METHOD_DEF  方法声明。
+        static int  METHOD_REF  对不带参数的方法或构造函数的引用。
+        static int  MINUS  该-（减法）运算符。
+        static int  MINUS_ASSIGN  该-=（减法赋值）运算符。
+        static int  MOD  该%（余）运算符。
+        static int  MOD_ASSIGN  该%=（余赋值）运算符。
+        static int  MODIFIERS  类型、方法和字段声明的修饰符。
+        static int  NOT_EQUAL  的!=（不等于）运算符。
+        static int  NUM_DOUBLE  双精度浮点文字。
+        static int  NUM_FLOAT  单精度浮点文字。
+        static int  NUM_INT  整数文字。
+        static int  NUM_LONG  一个长整数文字。
+        static int  OBJBLOCK  一个对象块。
+        static int  PACKAGE_DEF  包声明。
+        static int  PARAMETER_DEF  参数声明。
+        static int  PARAMETERS  方法或构造函数的参数列表。
+        static int  PATTERN_VARIABLE_DEF  一个模式变量定义；当有条件匹配时，此变量被分配给定义的类型。
+        static int  PERMITS_CLAUSE  许可条款。
+        static int  PLUS  在+（加）运算符。
+        static int  PLUS_ASSIGN  该+=（加法赋值）运算符。
+        static int  POST_DEC  该--（后缀递减）运算符。
+        static int  POST_INC  该++（后缀增量）运算符。
+        static int  QUESTION  在?（条件）运算符。
+        static int  RBRACK  该]符号。
+        static int  RCURLY  右花括号 ( })。
+        static int  RECORD_COMPONENT_DEF  记录组件是包含记录状态的变量。
+        static int  RECORD_COMPONENTS  记录组件是一个（可能是空的）列表，其中包含记录的组件，这些组件是构成其状态的变量。
+        static int  RECORD_DEF  记录的声明指定名称、标题和正文。
+        static int  RESOURCE  Java 7 try-with-resources 构造中的资源。
+        static int  RESOURCE_SPECIFICATION  Java 7 try-with-resources 构造。
+        static int  RESOURCES  Java 7 try-with-resources 构造中的资源列表。
+        static int  RPAREN  右括号 ( ))。
+        static int  SEMI  语句终止符 ( ;)。
+        static int  SINGLE_LINE_COMMENT  单行注释的开始：'//'。
+        static int  SL  的<<（左移）运算符。
+        static int  SL_ASSIGN  该<<=（左移赋值）运算符。
+        static int  SLIST  声明列表。
+        static int  SR  该>>（签署右移）运算符。
+        static int  SR_ASSIGN  该>>=（签署右移赋值）运算符。
+        static int  STAR  的*（乘法或通配符）运算符。
+        static int  STAR_ASSIGN  该*=（乘法赋值）运算符。
+        static int  static_IMPORT  静态导入声明。
+        static int  static_INIT  静态初始化块。
+        static int  STRICTFP  该strictfp关键字。
+        static int  STRING_LITERAL  字符串文字。
+        static int  SUPER_CTOR_CALL  一个超级构造函数调用。
+        static int  SWITCH_RULE  切换表达式。
+        static int  TEXT_BLOCK_CONTENT  Java 14 文本块的内容。
+        static int  TEXT_BLOCK_LITERAL_BEGIN  Java 14 文本块文字的开头，由三个双引号分隔。
+        static int  TEXT_BLOCK_LITERAL_END  Java 14 文本块文字的结尾，由三个双引号分隔。
+        static int  TYPE  一种。
+        static int  TYPE_ARGUMENT  类型引用或方法/构造函数调用的类型参数。
+        static int  TYPE_ARGUMENTS  类型引用或方法/构造函数调用的类型参数列表。
+        static int  TYPE_EXTENSION_AND  &用于扩展通用上限或下限约束或具有附加接口的类型转换表达式时的符号。
+        static int  TYPE_LOWER_BOUNDS  通配符类型参数的下限。
+        static int  TYPE_PARAMETER  类、接口或方法定义的类型参数。
+        static int  TYPE_PARAMETERS  类、接口或方法定义的类型参数列表。
+        static int  TYPE_UPPER_BOUNDS  通配符类型参数或类型参数的上限。
+        static int  TYPECAST  类型转换。
+        static int  UNARY_MINUS  的-（一元减号）运算符。
+        static int  UNARY_PLUS  的+（一元加号）运算符。
+        static int  VARIABLE_DEF  字段或局部变量声明。
+        static int  WILDCARD_TYPE  指代所有类型的类型。
+         -->
+
+
+
