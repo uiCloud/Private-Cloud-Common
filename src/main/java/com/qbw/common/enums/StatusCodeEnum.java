@@ -19,15 +19,18 @@ public enum StatusCodeEnum {
     EXCEPTION("401", "发生异常"),
     ;
 
-
-    private StatusCodeEnum(String code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
     @Getter
     private String code;
 
     @Getter
     private String message;
+
+    StatusCodeEnum(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+    public static String getMessageByCode(String code) {
+        return code;
+    }
 }
