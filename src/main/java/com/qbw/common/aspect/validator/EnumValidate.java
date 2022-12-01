@@ -1,4 +1,4 @@
-package com.qbw.common.aspect;
+package com.qbw.common.aspect.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -15,17 +15,18 @@ import java.lang.annotation.*;
 @Documented
 public @interface EnumValidate {
 
-    String message() default "";
+  String message() default "";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+  Class<? extends Payload>[] payload() default {};
 
-    Class<?>[] target() default {};
+  Class<?>[] target() default {};
 
-    /**
-     * 允许的枚举类
-     * @return
-     */
-    Class<? extends Enum> enumClass();
+  /**
+   * 允许的枚举类
+   *
+   * @return
+   */
+  Class<? extends Enum> enumClass();
 }

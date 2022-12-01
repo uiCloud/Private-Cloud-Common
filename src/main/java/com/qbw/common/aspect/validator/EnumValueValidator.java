@@ -1,4 +1,4 @@
-package com.qbw.common.aspect;
+package com.qbw.common.aspect.validator;
 
 import org.apache.commons.lang3.StringUtils;
 
