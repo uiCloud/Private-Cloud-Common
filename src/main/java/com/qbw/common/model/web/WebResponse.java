@@ -1,8 +1,9 @@
-package com.qbw.common.model;
+package com.qbw.common.model.web;
 
 import com.qbw.common.enums.StatusCodeEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
-public class WebResult implements Serializable {
+public class WebResponse implements Serializable {
   /** 响应状态码 */
   private String code;
   /** 响应信息 */
@@ -28,8 +29,8 @@ public class WebResult implements Serializable {
    *
    * @return
    */
-  public static WebResult success() {
-    return WebResult.success(
+  public static WebResponse success() {
+    return WebResponse.success(
         StatusCodeEnum.SUCCESS.getCode(), StatusCodeEnum.SUCCESS.getMessage(), null, null);
   }
 
@@ -39,8 +40,8 @@ public class WebResult implements Serializable {
    * @param data
    * @return
    */
-  public static WebResult success(Object data) {
-    return WebResult.success(StatusCodeEnum.SUCCESS.getCode(), data);
+  public static WebResponse success(ResponseEntity data) {
+    return WebResponse.success(StatusCodeEnum.SUCCESS.getCode(), data);
   }
 
   /**
@@ -50,8 +51,8 @@ public class WebResult implements Serializable {
    * @param data 有 data 时可以不返回元信息
    * @return
    */
-  public static WebResult success(String code, Object data) {
-    return WebResult.success(code, StatusCodeEnum.getMessageByCode(code), data, null);
+  public static WebResponse success(String code, Object data) {
+    return WebResponse.success(code, StatusCodeEnum.getMessageByCode(code), data, null);
   }
 
   /**
@@ -62,8 +63,8 @@ public class WebResult implements Serializable {
    * @param meta 有 data 时，也可以返回元信息
    * @return
    */
-  public static WebResult success(String code, Object data, Object meta) {
-    return WebResult.success(code, StatusCodeEnum.getMessageByCode(code), data, meta);
+  public static WebResponse success(String code, Object data, Object meta) {
+    return WebResponse.success(code, StatusCodeEnum.getMessageByCode(code), data, meta);
   }
 
   /**
@@ -71,8 +72,8 @@ public class WebResult implements Serializable {
    *
    * @return
    */
-  public static WebResult fail() {
-    return WebResult.fail(
+  public static WebResponse fail() {
+    return WebResponse.fail(
         StatusCodeEnum.EXCEPTION.getCode(), StatusCodeEnum.EXCEPTION.getMessage(), null);
   }
 
@@ -82,8 +83,8 @@ public class WebResult implements Serializable {
    * @param data
    * @return
    */
-  public static WebResult fail(Object data) {
-    return WebResult.fail(StatusCodeEnum.EXCEPTION.getCode(), data);
+  public static WebResponse fail(Object data) {
+    return WebResponse.fail(StatusCodeEnum.EXCEPTION.getCode(), data);
   }
 
   /**
@@ -93,17 +94,17 @@ public class WebResult implements Serializable {
    * @param meta
    * @return
    */
-  public static WebResult fail(String code, Object meta) {
-    return WebResult.fail(code, StatusCodeEnum.getMessageByCode(code), meta);
+  public static WebResponse fail(String code, Object meta) {
+    return WebResponse.fail(code, StatusCodeEnum.getMessageByCode(code), meta);
   }
 
-  private static WebResult success(String code, String message, Object data, Object meta) {
-    WebResult webResult = new WebResult();
-    webResult.code = code;
-    webResult.message = message;
-    webResult.data = data;
-    webResult.meta = meta;
-    return webResult;
+  public static WebResponse success(String code, String message, Object data, Object meta) {
+    WebResponse webResponse = new WebResponse();
+    webResponse.code = code;
+    webResponse.message = message;
+    webResponse.data = data;
+    webResponse.meta = meta;
+    return webResponse;
   }
 
   /**
@@ -112,13 +113,13 @@ public class WebResult implements Serializable {
    * @param meta
    * @return
    */
-  private static WebResult fail(String code, String message, Object meta) {
-    WebResult webResult = new WebResult();
-    webResult.code = code;
-    webResult.message = message;
+  public static WebResponse fail(String code, String message, Object meta) {
+    WebResponse webResponse = new WebResponse();
+    webResponse.code = code;
+    webResponse.message = message;
     // 失败响应不需要数据
-    webResult.data = null;
-    webResult.meta = meta;
-    return webResult;
+    webResponse.data = null;
+    webResponse.meta = meta;
+    return webResponse;
   }
 }
